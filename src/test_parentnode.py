@@ -49,3 +49,6 @@ class TestParentNode(unittest.TestCase):
         actual = parent.to_html()
         expected = "<p><b>bold text</b>normal text<i>italic text</i>normal text<ul><li>list item</li></ul></p>"
         self.assertEqual(actual, expected)
+
+if __name__ == "__main__":
+    unittest.main()
