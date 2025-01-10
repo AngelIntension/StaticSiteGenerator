@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from functions import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from functions import *
 
 class SplitNodesDelimiterShould(unittest.TestCase):
     def test_split_single_node(self):
@@ -93,3 +93,58 @@ class ExtractMarkdownLinksShould(unittest.TestCase):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
         actual = extract_markdown_links(text)
         self.assertEqual(actual, [])
+
+class SplitNodesLinkShould(unittest.TestCase):
+    def test_split_text_into_text_nodes_list(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev) for reference.",
+            TextType.TEXT,
+        )
+        actual = split_nodes_link([node])
+        expected = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"),
+            TextNode(" for reference.", TextType.TEXT)
+        ]
+        self.assertEqual(actual, expected)
+
+    def test_ignore_non_text_nodes(self):
+        bold_node = TextNode("bold text [foo](bar)", TextType.BOLD)
+        link_node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev) for reference.",
+            TextType.TEXT,
+        )
+        actual = split_nodes_link([bold_node, link_node])
+        expected = [
+            TextNode("bold text [foo](bar)", TextType.BOLD),
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"),
+            TextNode(" for reference.", TextType.TEXT)
+        ]
+        self.assertEqual(actual, expected)
+
+    def test_not_return_empty_strings(self):
+        node = TextNode("[foo](https://bar.baz)", TextType.TEXT)
+        actual = split_nodes_link([node])
+        expected = [TextNode("foo", TextType.LINK, "https://bar.baz")]
+        self.assertEqual(actual, expected)
+
+class SplitNodesImageShould(unittest.TestCase):
+    def test_split_text_into_text_nodes_list(self):
+        node = TextNode(
+            "This is text with an image ![image one](https://foo.bar) and another image ![image two](https://baz.qux) for reference.",
+            TextType.TEXT,
+        )
+        actual = split_nodes_image([node])
+        expected = [
+            TextNode("This is text with an image ", TextType.TEXT),
+            TextNode("image one", TextType.IMAGE, "https://foo.bar"),
+            TextNode(" and another image ", TextType.TEXT),
+            TextNode("image two", TextType.IMAGE, "https://baz.qux"),
+            TextNode(" for reference.", TextType.TEXT)
+        ]
+        self.assertEqual(actual, expected)

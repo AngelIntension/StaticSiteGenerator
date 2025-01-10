@@ -1,9 +1,9 @@
 import re
 from textnode import TextNode, TextType
 
-def split_nodes_delimiter(old_nodes, delimiter, text_type):
+def split_nodes_delimiter(nodes, delimiter, text_type):
     new_nodes = []
-    for node in old_nodes:
+    for node in nodes:
         if node.text_type != TextType.TEXT:
             new_nodes.append(node)
             continue
@@ -24,3 +24,33 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
+
+def split_nodes_link(nodes):
+    return split_nodes_complex(
+        nodes,
+        extract_markdown_links,
+        lambda link_tuple: f"[{link_tuple[0]}]({link_tuple[1]})",
+        TextType.LINK)
+
+def split_nodes_image(nodes):
+    return split_nodes_complex(
+        nodes,
+        extract_markdown_images,
+        lambda image_tuple: f"![{image_tuple[0]}]({image_tuple[1]})",
+        TextType.IMAGE)
+
+def split_nodes_complex(nodes, extract_function, split_delimiter_function, text_type):
+    new_nodes = []
+    for node in nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+        remaining_text = node.text
+        markdown_items = extract_function(remaining_text)
+        for tuple in markdown_items:
+            sections = remaining_text.split(split_delimiter_function(tuple), 1)
+            remaining_text = sections[1]
+            new_nodes.append(TextNode(sections[0], TextType.TEXT))
+            new_nodes.append(TextNode(tuple[0], text_type, tuple[1]))
+        new_nodes.append(TextNode(remaining_text, TextType.TEXT))
+    return list(filter(lambda node: node.text != "", new_nodes))
