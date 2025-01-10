@@ -54,3 +54,11 @@ def split_nodes_complex(nodes, extract_function, split_delimiter_function, text_
             new_nodes.append(TextNode(tuple[0], text_type, tuple[1]))
         new_nodes.append(TextNode(remaining_text, TextType.TEXT))
     return list(filter(lambda node: node.text != "", new_nodes))
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    return split_nodes_link(nodes)
