@@ -40,7 +40,7 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(str(cm.exception), "text node must have a valid text type")
 
     def test_text_node_to_html_node_should_handle_text_type(self):
-        node = TextNode("foo", TextType.NORMAL)
+        node = TextNode("foo", TextType.TEXT)
         actual = text_node_to_html_node(node)
         expected = LeafNode(None, "foo")
         self.assertEqual(str(actual), str(expected))
