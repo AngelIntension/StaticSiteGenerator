@@ -68,3 +68,34 @@ def markdown_to_blocks(markdown):
     blocks = re.split("\n{2,}", stripped_markdown)
     blocks = list(filter(lambda block: block != "", blocks))
     return list(map(str.strip, blocks))
+
+def block_to_block_type(block):
+    # check for header markup
+    regex_match = re.match(r"^(#{1,6}) ", block)
+    if regex_match:
+        return f"h{len(regex_match.group(1))}"
+
+    #check for code block
+    regex_match = re.match(r"^```.*```$", block, re.DOTALL)
+    if regex_match:
+        return "code"
+    
+    lines = block.split('\n')
+
+    #check for quote block
+    if all(re.match(r"^>", line) for line in lines):
+        return "quote"
+    
+    # check for unordered list
+    if all(re.match(r"^[*-] ", line) for line in lines):
+        return "ul"
+    
+    # check for ordered list
+    matches = list(map(lambda line: re.match(r"^(\d{1,})[.] ", line), lines))
+    if None not in matches:
+        list_numbers = list(map(lambda match: int(match.group(1)), matches))
+        if list_numbers == list(range(1, len(lines) + 1)):
+            return "ol"
+    
+    # normal paragraph
+    return "p"

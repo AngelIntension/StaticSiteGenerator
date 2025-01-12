@@ -185,3 +185,97 @@ class MarkDownToBlocksShould(unittest.TestCase):
             "* This is another list item"
         ]
         self.assertEqual(actual, expected)
+
+class BlockToBlockTypeShould(unittest.TestCase):
+    def test_convert_headings(self):
+        blocks = [
+            "# heading 1",
+            "##  heading 2",
+            "### heading 3",
+            "#### heading 4",
+            "##### heading 5",
+            "###### heading 6",
+            "####### normal paragraph",
+            "#normal paragraph"
+        ]
+        expected = [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "p"
+        ]
+        for i in range(0, len(blocks)):
+            actual = block_to_block_type(blocks[i])
+            self.assertEqual(actual, expected[i])
+
+    def test_convert_code_blocks(self):
+        blocks = [
+            "```code block```",
+            "```\ncode block\n```",
+            "```normal paragraph"
+        ]
+        expected = [
+            "code",
+            "code",
+            "p"
+        ]
+        for i in range(0, len(blocks)):
+            actual = block_to_block_type(blocks[i])
+            self.assertEqual(actual, expected[i])
+
+    def test_convert_quote_blocks(self):
+        blocks = [
+            ">quote block",
+            ">multi-line\n>quote block",
+            ">multi-line\nparagraph"
+        ]
+        expected = [
+            "quote",
+            "quote",
+            "p"
+        ]
+        for i in range(0, len(blocks)):
+            actual = block_to_block_type(blocks[i])
+            self.assertEqual(actual, expected[i])
+
+    def test_convert_unordered_list(self):
+        blocks = [
+            "* list item",
+            "- list item",
+            "* list item\n- list item 2",
+            "- paragraph\ntext",
+            "*paragraph text",
+            "-paragraph text"
+        ]
+        expected = [
+            "ul",
+            "ul",
+            "ul",
+            "p",
+            "p",
+            "p"
+        ]
+        for i in range(0, len(blocks)):
+            actual = block_to_block_type(blocks[i])
+            self.assertEqual(actual, expected[i])
+
+    def test_convert_ordered_list(self):
+        blocks = [
+            "1. item 1\n2. item 2\n3. item 3",
+            "2. item 1\n3. item 2",
+            "1. item 1\n3. item 2",
+            "1.item 1"
+        ]
+        expected = [
+            "ol",
+            "p",
+            "p",
+            "p"
+        ]
+        for i in range(0, len(blocks)):
+            actual = block_to_block_type(blocks[i])
+            self.assertEqual(actual, expected[i])
