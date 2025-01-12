@@ -1,5 +1,6 @@
 import re
 from textnode import TextNode, TextType
+from enum import Enum
 
 def split_nodes_delimiter(nodes, delimiter, text_type):
     new_nodes = []
@@ -69,33 +70,46 @@ def markdown_to_blocks(markdown):
     blocks = list(filter(lambda block: block != "", blocks))
     return list(map(str.strip, blocks))
 
+class BlockType(Enum):
+    H1 = "h1"
+    H2 = "h2"
+    H3 = "h3"
+    H4 = "h4"
+    H5 = "h5"
+    H6 = "h6"
+    CODE = "code"
+    QUOTE = "quoteblock"
+    UNORDERED_LIST = "ul"
+    ORDERED_LIST = "ol"
+    PARAGRAPH = "p"
+
 def block_to_block_type(block):
     # check for header markup
     regex_match = re.match(r"^(#{1,6}) ", block)
     if regex_match:
-        return f"h{len(regex_match.group(1))}"
+        return BlockType(f"h{len(regex_match.group(1))}")
 
     #check for code block
     regex_match = re.match(r"^```.*```$", block, re.DOTALL)
     if regex_match:
-        return "code"
+        return BlockType.CODE
     
     lines = block.split('\n')
 
     #check for quote block
     if all(re.match(r"^>", line) for line in lines):
-        return "quote"
+        return BlockType.QUOTE
     
     # check for unordered list
     if all(re.match(r"^[*-] ", line) for line in lines):
-        return "ul"
+        return BlockType.UNORDERED_LIST
     
     # check for ordered list
     matches = list(map(lambda line: re.match(r"^(\d{1,})[.] ", line), lines))
     if None not in matches:
         list_numbers = list(map(lambda match: int(match.group(1)), matches))
         if list_numbers == list(range(1, len(lines) + 1)):
-            return "ol"
+            return BlockType.ORDERED_LIST
     
     # normal paragraph
-    return "p"
+    return BlockType.PARAGRAPH

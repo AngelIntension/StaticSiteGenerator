@@ -199,14 +199,14 @@ class BlockToBlockTypeShould(unittest.TestCase):
             "#normal paragraph"
         ]
         expected = [
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "p",
-            "p"
+            BlockType.H1,
+            BlockType.H2,
+            BlockType.H3,
+            BlockType.H4,
+            BlockType.H5,
+            BlockType.H6,
+            BlockType.PARAGRAPH,
+            BlockType.PARAGRAPH
         ]
         for i in range(0, len(blocks)):
             actual = block_to_block_type(blocks[i])
@@ -219,9 +219,9 @@ class BlockToBlockTypeShould(unittest.TestCase):
             "```normal paragraph"
         ]
         expected = [
-            "code",
-            "code",
-            "p"
+            BlockType.CODE,
+            BlockType.CODE,
+            BlockType.PARAGRAPH
         ]
         for i in range(0, len(blocks)):
             actual = block_to_block_type(blocks[i])
@@ -234,9 +234,9 @@ class BlockToBlockTypeShould(unittest.TestCase):
             ">multi-line\nparagraph"
         ]
         expected = [
-            "quote",
-            "quote",
-            "p"
+            BlockType.QUOTE,
+            BlockType.QUOTE,
+            BlockType.PARAGRAPH
         ]
         for i in range(0, len(blocks)):
             actual = block_to_block_type(blocks[i])
@@ -252,12 +252,12 @@ class BlockToBlockTypeShould(unittest.TestCase):
             "-paragraph text"
         ]
         expected = [
-            "ul",
-            "ul",
-            "ul",
-            "p",
-            "p",
-            "p"
+            BlockType.UNORDERED_LIST,
+            BlockType.UNORDERED_LIST,
+            BlockType.UNORDERED_LIST,
+            BlockType.PARAGRAPH,
+            BlockType.PARAGRAPH,
+            BlockType.PARAGRAPH
         ]
         for i in range(0, len(blocks)):
             actual = block_to_block_type(blocks[i])
@@ -271,10 +271,10 @@ class BlockToBlockTypeShould(unittest.TestCase):
             "1.item 1"
         ]
         expected = [
-            "ol",
-            "p",
-            "p",
-            "p"
+            BlockType.ORDERED_LIST,
+            BlockType.PARAGRAPH,
+            BlockType.PARAGRAPH,
+            BlockType.PARAGRAPH
         ]
         for i in range(0, len(blocks)):
             actual = block_to_block_type(blocks[i])
