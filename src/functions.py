@@ -62,3 +62,9 @@ def text_to_textnodes(text):
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
     nodes = split_nodes_image(nodes)
     return split_nodes_link(nodes)
+
+def markdown_to_blocks(markdown):
+    stripped_markdown = '\n'.join(map(str.strip, markdown.split('\n')))
+    blocks = re.split("\n{2,}", stripped_markdown)
+    blocks = list(filter(lambda block: block != "", blocks))
+    return list(map(str.strip, blocks))

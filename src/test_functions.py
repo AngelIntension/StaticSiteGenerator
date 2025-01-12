@@ -166,3 +166,22 @@ class TextToTextNodesShould(unittest.TestCase):
             TextNode("link", TextType.LINK, "https://boot.dev")
         ]
         self.assertEqual(actual, expected)
+
+class MarkDownToBlocksShould(unittest.TestCase):
+    def test_split_markdown_into_blocks(self):
+        markdown = "# This is a heading   \n \n" + \
+            "This is a paragraph of text. It has some **bold** and *italic* words inside of it.   \n" + \
+            "  \n \n" + \
+            "* This is the first list item in a list block\n" + \
+            "* This is a list item\n" + \
+            "* This is another list item   " + \
+            "\n\n\n"
+        actual = markdown_to_blocks(markdown)
+        expected = [
+            "# This is a heading",
+            "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
+            "* This is the first list item in a list block\n" +
+            "* This is a list item\n" +
+            "* This is another list item"
+        ]
+        self.assertEqual(actual, expected)
